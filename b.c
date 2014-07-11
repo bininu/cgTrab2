@@ -90,7 +90,7 @@ int main() {
 	polylines[1].points[2] = newPoint(-3.0,-6.0);
 	polylines[1].points[3] = newPoint(-6.0,-9.0);
 	polylines[1].points[4] = newPoint(-9.0,-8.0);
-	polylines[2] = clone(polylines[1]);
+	polylines[2] = clone(polylines[0]);
 
 	float om[3][3];
 	initOperationMatrix(om);

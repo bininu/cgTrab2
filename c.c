@@ -36,7 +36,7 @@ int main() {
 	u.pMin = pMin;
 	u.pMax = pMax;
 
-	vp = createViewPort(newPoint(-8.0, -7.0), newPoint(5, 5), &u);
+	vp = createViewPort(newPoint(-10.0, -10.0), newPoint(0, 0), &u);
 	// vp = createViewPort(pMin, pMax, &u);
 	if (vp == NULL) {
 		printf("Erro de alocacao do veiwport\n");
@@ -64,23 +64,23 @@ int main() {
 		exit(0);
 	}
 
-	if (!addColorHSV(cm, 2, 261.0, 0.87, 0.5)) {
+	if (!addColor(cm, 2, 0,0,255,0)) {
 		printf("[ERRO] cor '2' nao pode ser inserida no mapa de cores\n");
 		exit(0);
 	}
 
-	if (!addColorHSV(cm, 3, 355.0, 0.89, 0.43)) {
+	if (!addColor(cm, 3, 255,0,0,0)) {
 		printf("[ERRO] cor '3' nao pode ser inserida no mapa de cores\n");
 		exit(0);
 	}
 
-	if (!addColorHSV(cm, 4, 129.0, 0.7, 0.46)) {
+	if (!addColorHSV(cm, 4, 355.0, 0.89, 0.43)) {
 		printf("[ERRO] cor '4' nao pode ser inserida no mapa de cores\n");
 		exit(0);
 	}
 
 
-	int polylineCount = 3;
+	int polylineCount = 2;
 	Polyline polylines[polylineCount];
 
 	polylines[0] = newRectangle(newPoint(-6, -6), newPoint(-1, -2));
@@ -90,12 +90,7 @@ int main() {
 	polylines[1].points[2] = newPoint(-3.0,-6.0);
 	polylines[1].points[3] = newPoint(-6.0,-9.0);
 	polylines[1].points[4] = newPoint(-9.0,-8.0);
-	polylines[2] = clone(polylines[1]);
 
-	float om[3][3];
-	initOperationMatrix(om);
-	addRotationCCW(om, 45.0);
-	applyOM(om,&polylines[2]);
 
 	for (j = 0; j < polylineCount; j++) {
 		for (i = 0; i < polylines[j].pointCount; i++) {
@@ -107,7 +102,11 @@ int main() {
 	}
 	drawPolyLine(polylines[0], vp, 2);
 	drawPolyLine(polylines[1], vp, 3);
-	drawPolyLine(polylines[2], vp, 4);
+
+	Point p = newPoint(-5.0, -5.0);
+	p = srn2srd(sru2srn(p, vp->pMin, vp->pMax), MAXIMOX, MAXIMOY);
+	fill(&p, vp, 4);
+
 	show(vp, cm);
 
 	return 0;

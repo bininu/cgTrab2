@@ -273,7 +273,7 @@ void drawPolyLine(Polyline polyline, ViewPort* viewPort, int color) {
 }
 
 void fill2(Point* point, ViewPort* viewPort, int color, int bgColor) {
-	printf("BG Color: %d\n", bgColor);
+	// printf("BG Color: %d\n", bgColor);
 	if (readPoint(point, viewPort) == bgColor) {
 		drawPoint(point, viewPort, color);
 
@@ -551,8 +551,9 @@ void applyOM(float om[3][3], Polyline *polygon){
 	float x,y;
 
 	for(i = 0; i < polygon->pointCount; i++ ){
-		x = polygon->points[i].x * om[0][0] + polygon->points[i].x * om[0][1] + om[0][2];
+		x = polygon->points[i].x * om[0][0] + polygon->points[i].y * om[0][1] + om[0][2];
 		y = polygon->points[i].x * om[1][0] + polygon->points[i].y * om[1][1] + om[1][2];	
+		printf("(%f , %f)\n",x,y);
 		polygon->points[i].x = x;
 		polygon->points[i].y = y;	
 	}
