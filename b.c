@@ -1,13 +1,8 @@
 /*
 Renan Lordello de Aguiar RA 489867
 
-O dispositivo de saída que estou utilizando (monitor) é classificado com sendo 
-um dispositivo matricial, por ser basicamente um matriz de pixels, onde a cor 
-de cada pixel é determinada pelo valor atribuido àquela posição.
-
-O viewport escolhido não é suficiente para mostrar os objetos,
-uma viewport mais adequada seria, por exemplo, a limitada pelos extremos,
-(Xmin = -10 , Ymin = -10) e (Xmax = 0, Ymax = 0).
+RGB é chamado de sistema aditivo pois ele para gerar uma cor
+ele soma o valor de suas componentes
  */
 #include "cglib.h"
 #include <stdio.h>
@@ -36,7 +31,7 @@ int main() {
 	u.pMin = pMin;
 	u.pMax = pMax;
 
-	vp = createViewPort(newPoint(-8.0, -7.0), newPoint(5, 5), &u);
+	vp = createViewPort(newPoint(-2.0, -2.0), newPoint(2, 2), &u);
 	// vp = createViewPort(pMin, pMax, &u);
 	if (vp == NULL) {
 		printf("Erro de alocacao do veiwport\n");
@@ -64,17 +59,17 @@ int main() {
 		exit(0);
 	}
 
-	if (!addColorHSV(cm, 2, 261.0, 0.87, 0.5)) {
+	if (!addColor(cm, 2, 0,0,255,0)) {
 		printf("[ERRO] cor '2' nao pode ser inserida no mapa de cores\n");
 		exit(0);
 	}
 
-	if (!addColorHSV(cm, 3, 355.0, 0.89, 0.43)) {
+	if (!addColor(cm, 3, 255,0,0,0)) {
 		printf("[ERRO] cor '3' nao pode ser inserida no mapa de cores\n");
 		exit(0);
 	}
 
-	if (!addColorHSV(cm, 4, 129.0, 0.7, 0.46)) {
+	if (!addColor(cm, 4, 255, 255, 0, 0)) {
 		printf("[ERRO] cor '4' nao pode ser inserida no mapa de cores\n");
 		exit(0);
 	}
@@ -90,11 +85,28 @@ int main() {
 	polylines[1].points[2] = newPoint(-3.0,-6.0);
 	polylines[1].points[3] = newPoint(-6.0,-9.0);
 	polylines[1].points[4] = newPoint(-9.0,-8.0);
-	polylines[2] = clone(polylines[0]);
+	polylines[2] = clone(polylines[1]);
+
+	
+	Point bc = negative(barycenter(polylines, polylineCount));
 
 	float om[3][3];
 	initOperationMatrix(om);
+	addScale(om, 0.25, 0.25);
+	addTranslation(om, bc.x, bc.y);
+	applyOM(om,&polylines[0]);
+	applyOM(om,&polylines[1]);
+	applyOM(om,&polylines[2]);
+	
+
+	initOperationMatrix(om);
+	// bc = negative(centerOf(polylines[2]));
+	bc = barycenter(&polylines[2], 1);
+
+	addTranslation(om, bc.x, bc.y);
 	addRotationCCW(om, 45.0);
+	bc = negative(bc);
+	addTranslation(om, bc.x, bc.y);
 	applyOM(om,&polylines[2]);
 
 	for (j = 0; j < polylineCount; j++) {
@@ -107,7 +119,16 @@ int main() {
 	}
 	drawPolyLine(polylines[0], vp, 2);
 	drawPolyLine(polylines[1], vp, 3);
-	drawPolyLine(polylines[2], vp, 4);
+	drawPolyLine(polylines[2], vp, 1);
+
+
+	// bc = srn2srd(sru2srn(bc, vp->pMin, vp->pMax), MAXIMOX, MAXIMOY);
+	// drawPoint(&bc, vp, 1);
+	// bc = srn2srd(sru2srn(newPoint(1.0, 1.0), vp->pMin, vp->pMax), MAXIMOX, MAXIMOY);
+	// drawPoint(&bc, vp, 1);
+
+
+
 	show(vp, cm);
 
 	return 0;

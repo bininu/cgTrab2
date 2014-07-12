@@ -145,6 +145,7 @@ char allocateViewPortBuffer(ViewPort* vp, int screenMaxWidth,
 
 Point sru2srn(Point pSRU, Point pMin, Point pMax) {
 	Point pSRN;
+
 	pSRN.x = (pSRU.x - pMin.x) / (pMax.x - pMin.x);
 	pSRN.y = (pSRU.y - pMin.y) / (pMax.y - pMin.y);
 
@@ -529,10 +530,16 @@ void initOperationMatrix(float om[3][3]){
 		degrees: angulo de rotação
 */
 void addRotationCCW(float om[3][3], float degrees){
-	double theta = (degrees * M_PI) / 180; // converting degrees into radians
+	float theta; // converting degrees into radians
+	float cosTheta;
+	float sinTheta;
+
+	theta = (degrees * M_PI) / 180; // converting degrees into radians
+	cosTheta = (float)cos(theta);
+	sinTheta = (float)sin(theta);
 	float rotacao[3][3] = { 
-					  {cos(theta), -sin(theta), 0},
-					  {sin(theta), cos(theta),  0}, 
+					  {cosTheta, -sinTheta, 0},
+					  {sinTheta, cosTheta,  0}, 
 					  {0,		   0, 			1}
 					};
 	
@@ -553,8 +560,75 @@ void applyOM(float om[3][3], Polyline *polygon){
 	for(i = 0; i < polygon->pointCount; i++ ){
 		x = polygon->points[i].x * om[0][0] + polygon->points[i].y * om[0][1] + om[0][2];
 		y = polygon->points[i].x * om[1][0] + polygon->points[i].y * om[1][1] + om[1][2];	
-		printf("(%f , %f)\n",x,y);
+		// printf("(%f , %f)\n",x,y);
 		polygon->points[i].x = x;
 		polygon->points[i].y = y;	
 	}
+}
+
+/*
+	Adiciona a om uma rotação
+
+	Entrada:
+		om: operation matrix
+		degrees: angulo de rotação
+*/
+void addTranslation(float om[3][3], float dx, float dy){
+	float translation[3][3] = { 
+					  {1, 0, dx},
+					  {0, 1, dy}, 
+					  {0, 0, 1 }
+					};
+	
+	mult(om, translation);
+}
+
+Point barycenter(Polyline* vetor, int number){
+	int i,j;
+	float maxX, maxY, minX, minY;
+
+	for(i = 0; i < number; i++){
+		for(j = 0; j < vetor[i].pointCount; j++){
+			if(i == 0 && j == 0){
+				maxX = vetor[i].points[j].x;
+				minX = vetor[i].points[j].x;
+				maxY = vetor[i].points[j].y;
+				minY = vetor[i].points[j].y;
+			}else{
+				if(vetor[i].points[j].x > maxX){
+					maxX = vetor[i].points[j].x;
+				}
+				if(vetor[i].points[j].x < minX){
+					minX = vetor[i].points[j].x;
+				}
+				if(vetor[i].points[j].y > maxY){
+					maxY = vetor[i].points[j].y;
+				}
+				if(vetor[i].points[j].y < minY){
+					minY = vetor[i].points[j].y;
+				}
+			}
+		}
+	}
+
+	return newPoint(minX + (maxX - minX)/2, minY + (maxY - minY)/2);
+}
+
+
+/*
+	Adiciona a om uma operação de escala
+
+	Entrada:
+		om: operation matrix
+		dx: variação no x
+		dy: variação no y
+*/
+void addScale(float om[3][3], float Sx, float Sy){
+	float translation[3][3] = { 
+					  {Sx, 0, 0},
+					  {0, Sy, 0}, 
+					  {0, 0, 1 }
+					};
+	
+	mult(om, translation);	
 }

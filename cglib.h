@@ -184,3 +184,33 @@ void addRotationCCW(float om[3][3], float degrees);
 		polygon: poligono onde sera aplicada a transformação
 */
 void applyOM(float om[3][3], Polyline *polygon);
+
+/*
+	Adiciona a om uma translação 
+
+	Entrada:
+		om: operation matrix
+		dx: variação no x
+		dy: variação no y
+*/
+void addTranslation(float om[3][3], float dx, float dy);
+
+
+/*
+	Acha o baricentro de um comjunto de poligonos
+
+	Saída:
+		o baricentro
+*/
+Point barycenter(Polyline* vetor, int number);
+
+
+/*
+	Adiciona a om uma operação de escala
+
+	Entrada:
+		om: operation matrix
+		dx: variação no x
+		dy: variação no y
+*/
+void addScale(float om[3][3], float Sx, float Sy);
